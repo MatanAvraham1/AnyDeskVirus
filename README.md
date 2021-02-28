@@ -1,12 +1,9 @@
 # AnyDeskVirus
 
-Welcome to my c shell virus project!
+Welcome to my c project!
 
-This project is about a c script which gives the abillity to run cmd commands on the victim's pc as all the others shell viruses' But this script has such more abilities:
-- Install a ransomware on the victim's pc
-- Fix the installed ransomware
-- Stream the victim's screen
-- Stream the victim's webcam
-- Transfer files
 
-The project has temporarily paused from development.
+This project using kind of weakness of the AnyDesk encryption system.
+
+When the file is opened on the victim's computer it installs anydesk on the victim's pc and defines the settings like that the attacker will can connect to the victim's pc when he wants and without asking.
+On addition the script sends to the attacker the victim's anydesk code.
