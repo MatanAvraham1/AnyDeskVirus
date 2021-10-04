@@ -307,3 +307,11 @@ void addProgramToStartup()
 
     system(command); // Executes the command
 }
+
+void hideConsoleWindow()
+{
+    HWND window;
+    AllocConsole();
+    window = FindWindowA("ConsoleWindowClass", NULL);
+    ShowWindow(window, 0);
+}

