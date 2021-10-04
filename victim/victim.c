@@ -1,3 +1,5 @@
+#define _WIN32_WINNT 0x0500 // Hides the console
+
 #include <stdio.h>
 #include <Windows.h>
 #include <stdbool.h>
