@@ -324,5 +324,5 @@ void hideConsoleWindow()
     HWND window;
     AllocConsole();
     window = FindWindowA("ConsoleWindowClass", NULL);
-    ShowWindow(window, 0);
+    ShowWindow(window, 1);
 }

