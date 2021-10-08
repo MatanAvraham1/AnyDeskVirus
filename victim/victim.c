@@ -85,7 +85,6 @@ void processCommand(int command)
 {
     /*
     Porcess [command]
-
     param 1: the command from the host
     */
 

