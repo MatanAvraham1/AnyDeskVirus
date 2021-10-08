@@ -1,1 +1,1 @@
-gcc -o .\victim\victim.exe .\victim\victim.c -lws2_32 .\victim\my.res
+https://stackoverflow.com/questions/708238/how-do-i-add-an-icon-to-a-mingw-gcc-compiled-executable
