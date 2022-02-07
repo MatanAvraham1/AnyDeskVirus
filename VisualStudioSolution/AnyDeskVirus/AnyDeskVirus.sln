@@ -1,0 +1,72 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Victim", "AnyDeskVirus\AnyDeskVirus.vcxproj", "{44678497-BB7F-48F0-A07D-912E6F6232A8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcxproj", "{1CD67980-066A-420A-ACC2-F62F4EBAFEDB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PyrhonServer", "PyrhonServer", "{634CE844-34D0-4056-947B-F90B29B7BF6C}"
+	ProjectSection(SolutionItems) = preProject
+		constants.py = constants.py
+		main.py = main.py
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "classes", "classes", "{4EAE97A4-D415-497A-AD8A-31A75BDB22EA}"
+	ProjectSection(SolutionItems) = preProject
+		host_gui.py = host_gui.py
+		victim.py = victim.py
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A4E966A-1215-4A79-909B-BA03080C9E4A}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		RFC.txt = RFC.txt
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{0C87510F-40C5-40B6-B897-04E6FE7B735D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{44678497-BB7F-48F0-A07D-912E6F6232A8}.Debug|x64.ActiveCfg = Debug|x64
+		{44678497-BB7F-48F0-A07D-912E6F6232A8}.Debug|x64.Build.0 = Debug|x64
+		{44678497-BB7F-48F0-A07D-912E6F6232A8}.Debug|x86.ActiveCfg = Debug|Win32
+		{44678497-BB7F-48F0-A07D-912E6F6232A8}.Debug|x86.Build.0 = Debug|Win32
+		{44678497-BB7F-48F0-A07D-912E6F6232A8}.Release|x64.ActiveCfg = Release|x64
+		{44678497-BB7F-48F0-A07D-912E6F6232A8}.Release|x64.Build.0 = Release|x64
+		{44678497-BB7F-48F0-A07D-912E6F6232A8}.Release|x86.ActiveCfg = Release|Win32
+		{44678497-BB7F-48F0-A07D-912E6F6232A8}.Release|x86.Build.0 = Release|Win32
+		{1CD67980-066A-420A-ACC2-F62F4EBAFEDB}.Debug|x64.ActiveCfg = Debug|x64
+		{1CD67980-066A-420A-ACC2-F62F4EBAFEDB}.Debug|x64.Build.0 = Debug|x64
+		{1CD67980-066A-420A-ACC2-F62F4EBAFEDB}.Debug|x86.ActiveCfg = Debug|Win32
+		{1CD67980-066A-420A-ACC2-F62F4EBAFEDB}.Debug|x86.Build.0 = Debug|Win32
+		{1CD67980-066A-420A-ACC2-F62F4EBAFEDB}.Release|x64.ActiveCfg = Release|x64
+		{1CD67980-066A-420A-ACC2-F62F4EBAFEDB}.Release|x64.Build.0 = Release|x64
+		{1CD67980-066A-420A-ACC2-F62F4EBAFEDB}.Release|x86.ActiveCfg = Release|Win32
+		{1CD67980-066A-420A-ACC2-F62F4EBAFEDB}.Release|x86.Build.0 = Release|Win32
+		{0C87510F-40C5-40B6-B897-04E6FE7B735D}.Debug|x64.ActiveCfg = Debug|x64
+		{0C87510F-40C5-40B6-B897-04E6FE7B735D}.Debug|x64.Build.0 = Debug|x64
+		{0C87510F-40C5-40B6-B897-04E6FE7B735D}.Debug|x86.ActiveCfg = Debug|Win32
+		{0C87510F-40C5-40B6-B897-04E6FE7B735D}.Debug|x86.Build.0 = Debug|Win32
+		{0C87510F-40C5-40B6-B897-04E6FE7B735D}.Release|x64.ActiveCfg = Release|x64
+		{0C87510F-40C5-40B6-B897-04E6FE7B735D}.Release|x64.Build.0 = Release|x64
+		{0C87510F-40C5-40B6-B897-04E6FE7B735D}.Release|x86.ActiveCfg = Release|Win32
+		{0C87510F-40C5-40B6-B897-04E6FE7B735D}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4EAE97A4-D415-497A-AD8A-31A75BDB22EA} = {634CE844-34D0-4056-947B-F90B29B7BF6C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {167F598A-63EF-4DD6-A468-07B2EAD3F491}
+	EndGlobalSection
+EndGlobal

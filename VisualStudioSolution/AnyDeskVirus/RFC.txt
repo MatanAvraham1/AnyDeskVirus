@@ -1,0 +1,10 @@
+The password to the anydesk is 
+MatanExtreme1346790
+
+
+
+commands:
+install - 0
+code - 1
+powerOn - 2
+powerOff - 3
