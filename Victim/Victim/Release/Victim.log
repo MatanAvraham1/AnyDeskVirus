@@ -1,0 +1,4 @@
+﻿  Victim.c
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\VictimCommands.h(62,54): warning C4013: 'isAnyDeskInstalled' undefined; assuming extern returning int
+Victim.obj : error LNK2001: unresolved external symbol _isAnyDeskInstalled
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Release\Victim.exe : fatal error LNK1120: 1 unresolved externals

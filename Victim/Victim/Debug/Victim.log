@@ -1,0 +1,5 @@
+﻿  Victim.c
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\CurlRequest.h(155,19): warning C4101: 'server': unreferenced local variable
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\AnyDeskFile.h(288,23): warning C4013: 'startsWith' undefined; assuming extern returning int
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\Victim.c(71,22): warning C4101: 'pcDetails': unreferenced local variable
+  Victim.vcxproj -> C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Debug\Victim.exe
