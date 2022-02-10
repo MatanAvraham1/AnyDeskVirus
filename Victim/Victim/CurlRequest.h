@@ -1,7 +1,7 @@
 #pragma once
 
 #define CURL_STATICLIB
-#define REQUEST_FAILED_ERROR "0"
+#define REQUEST_FAILED_ERROR 1
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +9,7 @@
 #include <curl/curl.h>
 #include <stdlib.h>
 #include <openssl/md5.h>
+#include <stdbool.h>
 
 struct MemoryStruct {
     char* memory;
@@ -41,14 +42,25 @@ WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
     return realsize;
 }
 
-struct MemoryStruct getRequest(char * url) {
+int getRequest(char * url, struct MemoryStruct *response) {
+    /*
+    Gets get request
+
+    param 1: the url to get
+    param 2: pointer to the response object which will contain the response
+    
+    return:
+        on sucess - 0
+        else - error
+    */
+
+
     CURL* curl_handle;
     CURLcode res;
-    struct MemoryStruct chunk;
     bool isThereError = false;
 
-    chunk.memory = malloc(1);  /* will be grown as needed by the realloc above */
-    chunk.size = 0;    /* no data at this point */
+    response->memory = malloc(1);  /* will be grown as needed by the realloc above */
+    response->size = 0;    /* no data at this point */
 
     curl_global_init(CURL_GLOBAL_ALL);
 
@@ -62,7 +74,7 @@ struct MemoryStruct getRequest(char * url) {
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
 
     /* we pass our 'chunk' struct to the callback function */
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void*)&chunk);
+    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void*)response);
 
     /* some servers don't like requests that are made without a user-agent
        field, so we provide one */
@@ -76,6 +88,8 @@ struct MemoryStruct getRequest(char * url) {
         fprintf(stderr, "curl_easy_perform() failed: %s\n",
             curl_easy_strerror(res));
 
+
+        free(response->memory);
         isThereError = true;
     }
     
@@ -86,42 +100,49 @@ struct MemoryStruct getRequest(char * url) {
     /* we're done with libcurl, so clean it up */
     curl_global_cleanup();
 
-    return chunk;
+    if (isThereError) {
+        return REQUEST_FAILED_ERROR;
+    }
+    return 0;
 }
 
-struct Server getIpAndPort()
+int getIpAndPort(struct Server *server)
 {
+    /*
+    Gets the ip and the port of the server
 
-    struct Server server;
-    struct MemoryStruct chunk = getRequest("https://sc-initiation-5d638-default-rtdb.firebaseio.com/.json");
+    param 1: will contain the response
+
+    on sucess - 0
+    else - error
+
     
-    if (chunk.size == 0) {
-        strcpy_s(server.PORT, sizeof(server.PORT), REQUEST_FAILED_ERROR);
+    */
+    struct MemoryStruct response;    
+    
+    if (getRequest("https://sc-initiation-5d638-default-rtdb.firebaseio.com/.json", &response) != 0) {
+        return REQUEST_FAILED_ERROR;
     }
     else {
         int ipStartIndex = 0, ipEndIndex = 0, portStartIndex = 0, portEndIndex = 0;
 
-        for (size_t i = 0; i < chunk.size; i++)
+        for (size_t i = 0; i < response.size; i++)
         {
-            if (chunk.memory[i] == 'i' && chunk.memory[i + 1] == 'p') {
+            if (response.memory[i] == 'i' && response.memory[i + 1] == 'p') {
                 ipStartIndex = i + 5;
             }
-            if (chunk.memory[i] == 'p' && chunk.memory[i + 1] == 'o' && chunk.memory[i + 2] == 'r' && chunk.memory[i + 3] == 't') {
+            if (response.memory[i] == 'p' && response.memory[i + 1] == 'o' && response.memory[i + 2] == 'r' && response.memory[i + 3] == 't') {
                 ipEndIndex = i - 4;
                 portStartIndex = i + 7;
-                portEndIndex = chunk.size - 3;
+                portEndIndex = i + 11;
             }
         }
 
-        strncpy_s(server.IP, sizeof(server.IP), chunk.memory + ipStartIndex, ipEndIndex - ipStartIndex + 1);
-        strncpy_s(server.PORT, sizeof(server.PORT), chunk.memory + portStartIndex, portEndIndex - portStartIndex + 1);
-    }
-
-
-    if (chunk.memory)
-        free(chunk.memory);
-
-    return server;
+        strncpy_s(server->IP, sizeof(server->IP), response.memory + ipStartIndex, ipEndIndex - ipStartIndex + 1);
+        strncpy_s(server->PORT, sizeof(server->PORT), response.memory + portStartIndex, portEndIndex - portStartIndex + 1);
+        free(response.memory);
+        return 0;
+    }    
 }
 
 
@@ -129,30 +150,60 @@ char* getHashOfAnyDeskFile()
 {
     /*
     Returns the hash of the anydesk file
+
+    return:
+    on sucess - pointer to hash string
+    on error - pointer to NULL
     */
     
     char* hash = NULL;
-    struct MemoryStruct chunk = getRequest("https://sc-initiation-5d638-default-rtdb.firebaseio.com/hash.json");
-
-    if(chunk.size > 0) {
-        hash = calloc(sizeof(char), chunk.size);
-        strncpy_s(hash, chunk.size, chunk.memory + 1, chunk.size - 2);
-    }
-
-    if (chunk.memory)
-        free(chunk.memory);
-
-    
-    if (hash == NULL) {
-        return REQUEST_FAILED_ERROR;
+    struct MemoryStruct response;
+    if (getRequest("https://sc-initiation-5d638-default-rtdb.firebaseio.com/hash.json", &response) != 0) {
+        return hash;
     }
     else {
+        hash = calloc(sizeof(char), response.size);
+        strncpy_s(hash, response.size, response.memory + 1, response.size - 2);
+        free(response.memory);
         return hash;
     }
 }
 
-int main() {
-    struct Server server = getIpAndPort();
-    char* hash = getHashOfAnyDeskFile();
-    return 0;
+
+char* getFileHash(char* filePath) {
+    /*
+    Returns hash of file
+
+    param 1: the file to hash
+    */
+
+    unsigned char buffer_md5[MD5_DIGEST_LENGTH], data[1024];
+    char* md5_as_string = calloc(200, sizeof(char)); // TODO: check how much size this has to be
+    int i, bytes;;
+    FILE* inFile;
+    MD5_CTX mdContext;
+
+    fopen_s(&inFile, filePath, "rb");
+
+    // If file does not exist
+    if (inFile == NULL) {
+        return false;
+    }
+
+    // Calculates the hash
+    MD5_Init(&mdContext);
+    while ((bytes = fread(data, 1, sizeof(data), inFile)) != 0)
+        MD5_Update(&mdContext, data, bytes);
+    MD5_Final(buffer_md5, &mdContext);
+    fclose(inFile);
+
+    // Converts the hash to string
+    char buf[32];
+    for (i = 0; i < MD5_DIGEST_LENGTH; i++) {
+        sprintf_s(buf, sizeof(buf), "%02x", buffer_md5[i]);
+        strcat_s(md5_as_string, 200, buf);
+    }
+
+
+    return md5_as_string;
 }

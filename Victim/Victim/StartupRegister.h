@@ -78,6 +78,12 @@ BOOL RegisterMyProgramForStartup(PCWSTR pszAppName, PCWSTR pathToExe, PCWSTR arg
     return fSuccess;
 }
 
+BOOL RemoveMyProgramFromStartup()
+{
+    int iResult = RegDeleteKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", (KEY_WRITE | KEY_READ), 0);
+    return ERROR_SUCCESS == iResult;
+}
+
 void RegisterProgram()
 {
     wchar_t szPathToExe[MAX_PATH];

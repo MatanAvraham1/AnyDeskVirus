@@ -1,5 +1,6 @@
 ﻿  Victim.c
-C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\CurlRequest.h(155,19): warning C4101: 'server': unreferenced local variable
-C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\AnyDeskFile.h(288,23): warning C4013: 'startsWith' undefined; assuming extern returning int
-C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\Victim.c(71,22): warning C4101: 'pcDetails': unreferenced local variable
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\AnyDeskFile.h(299,27): warning C4013: 'startsWith' undefined; assuming extern returning int
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\AnyDeskFile.h(344,20): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'FILE *'
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\AnyDeskFile.h(562,48): warning C4047: '=': 'DIR *' differs in levels of indirection from 'int'
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\Victim.c(92,56): warning C4133: 'function': incompatible types - from 'int *' to 'const char *'
   Victim.vcxproj -> C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Debug\Victim.exe

@@ -87,11 +87,11 @@ def runNgrok():
     ngrok_port = ngrok_url[1]
 
     # Updates the ip&port on the server
-    request = requests.put("https://sc-initiation-5d638-default-rtdb.firebaseio.com/.json",
-                           json={
-                               "ip": ngrok_ip,
-                               "port": ngrok_port,
-                           })
+    request = requests.patch("https://sc-initiation-5d638-default-rtdb.firebaseio.com/.json",
+                             json={
+                                 "ip": ngrok_ip,
+                                 "port": ngrok_port,
+                             })
 
     if(request.status_code != 200):
         raise Exception("Can't update ip!")
