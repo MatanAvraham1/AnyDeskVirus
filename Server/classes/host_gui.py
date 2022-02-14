@@ -1,6 +1,7 @@
 import socket
 import threading
 import tkinter as tk
+from tkinter import ttk
 from tkinter.messagebox import showerror, showinfo
 
 from .victim import ThereIsAlreadyOneRunningCommand, Victim
@@ -77,6 +78,25 @@ class HostWithGUI:
 
         )
         startBtn.pack()
+
+        infoTable = ttk.Treeview(self.window)
+        infoTable['columns'] = (
+            'computer_name', 'logged_user_name', 'is_anydesk_installed')
+
+        infoTable.column("#0", width=0,  stretch=tk.NO)
+        infoTable.column("computer_name", anchor=tk.CENTER, width=80)
+        infoTable.column("logged_user_name", anchor=tk.CENTER, width=80)
+        infoTable.column("is_anydesk_installed", anchor=tk.CENTER, width=80)
+
+        infoTable.heading("#0", text="", anchor=tk.CENTER)
+        infoTable.heading(
+            "computer_name", text="Computer Name", anchor=tk.CENTER)
+        infoTable.heading("logged_user_name",
+                          text="Logged User Name", anchor=tk.CENTER)
+        infoTable.heading("is_anydesk_installed",
+                          text="Is AnyDesk Installed?", anchor=tk.CENTER)
+
+        infoTable.pack()
 
     def startButtonOnClick(self, selectedOption, selectedVictimAddr):
         """

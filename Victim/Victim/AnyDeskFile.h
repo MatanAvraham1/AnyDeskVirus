@@ -54,7 +54,7 @@ void setAnyDeskFilePath()
 
     // Sets the path
     strcpy_s(anyDeskFilePath, sizeof(anyDeskFilePath), buf);
-    strcat_s(anyDeskFilePath, sizeof(anyDeskFilePath), "\\Downloads\\anydesk.exe");
+    strcat_s(anyDeskFilePath, sizeof(anyDeskFilePath), "\\Downloads\\Anydesk.exe");
 
     printf("The anydesk file path is: ");
     puts(anyDeskFilePath);

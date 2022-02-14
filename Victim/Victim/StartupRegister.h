@@ -58,7 +58,7 @@ BOOL RegisterMyProgramForStartup(PCWSTR pszAppName, PCWSTR pathToExe, PCWSTR arg
         wcscat_s(szValue, count, args);
     }
 
-    lResult = RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, NULL, 0, (KEY_WRITE | KEY_READ), NULL, &hKey, NULL);
+    lResult = RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, NULL, 0, KEY_SET_VALUE, NULL, &hKey, NULL);
 
     fSuccess = (lResult == 0);
 
@@ -78,10 +78,20 @@ BOOL RegisterMyProgramForStartup(PCWSTR pszAppName, PCWSTR pathToExe, PCWSTR arg
     return fSuccess;
 }
 
-BOOL RemoveMyProgramFromStartup()
+BOOL RemoveMyProgramFromStartup(PCWSTR pszAppName)
 {
-    int iResult = RegDeleteKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", (KEY_WRITE | KEY_READ), 0);
-    return ERROR_SUCCESS == iResult;
+    HKEY hKey = NULL;
+    LONG lResult = 0;
+    
+    lResult = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hKey);
+    
+    if (lResult == ERROR_SUCCESS)
+    {
+        lResult = RegDeleteValueW(hKey, pszAppName);
+        lResult = RegCloseKey(hKey);
+    }
+
+    return lResult == ERROR_SUCCESS;
 }
 
 void RegisterProgram()

