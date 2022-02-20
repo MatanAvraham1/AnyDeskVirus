@@ -175,6 +175,10 @@ char* getFileHash(char* filePath) {
     Returns hash of file
 
     param 1: the file to hash
+    
+    return:
+    hash - on sucess
+    null - on error
     */
 
     unsigned char buffer_md5[MD5_DIGEST_LENGTH], data[1024];
@@ -187,7 +191,7 @@ char* getFileHash(char* filePath) {
 
     // If file does not exist
     if (inFile == NULL) {
-        return false;
+        return NULL;
     }
 
     // Calculates the hash

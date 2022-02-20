@@ -27,12 +27,12 @@ void powerOnAnyDesk();
 void powerOffAnyDesk();
 void setAnyDeskFilePath();
 
-int checkIfFileExists(const char* filename) {
+bool checkIfFileExists(const char* filename) {
     if (_access(filename, 0) == 0) {
-        return 0;
+        return true;
     }
     else {
-        return 1;
+        return false;
     }
 }
 
@@ -163,6 +163,9 @@ bool isTheAnyDeskFile(char* pathToFile)
     char* lastUpdatedFileHash = NULL;
     char* fileHash = getFileHash(pathToFile);
 
+    if (fileHash == NULL) {
+        return false;
+    }
 
     // Gets the last updated hash    
     lastUpdatedFileHash = getHashOfAnyDeskFile();
@@ -529,7 +532,6 @@ void powerOnAnyDesk()
     */
 
     printf("Powering on...\n");
-    // ShellExecuteA(GetDesktopWindow(), "open", "C:\\Users\\Matan\\Downloads\\AnyDesk.exe", NULL, NULL, SW_SHOW);
     ShellExecuteA(NULL, "open", anyDeskFilePath, NULL, NULL, SW_SHOW);
 
     printf("Anydesk has successfully powered on!\n");
@@ -559,7 +561,8 @@ void delete_directory(char* directoryPath) {
     char file_path[PATH_MAX] = {0};
         
     // If can't open the dir
-    while (dir = opendir(directoryPath) == NULL) {
+    dir = opendir(directoryPath);
+    while (dir == NULL) {
         if (errno == ENOENT) {
             return; // The dir doesn't exists..
         }
@@ -568,6 +571,7 @@ void delete_directory(char* directoryPath) {
             printf("Can't open the dir %s, try again in 1 minute...", directoryPath);
             Sleep(60000);
             powerOffAnyDesk();
+            dir = opendir(directoryPath);
         }
     }
     

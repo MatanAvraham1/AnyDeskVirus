@@ -1,11 +1,11 @@
 ﻿  Victim.c
-C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\AnyDeskFile.h(299,27): warning C4013: 'startsWith' undefined; assuming extern returning int
-C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\AnyDeskFile.h(344,20): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'FILE *'
-C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\AnyDeskFile.h(562,48): warning C4047: '=': 'DIR *' differs in levels of indirection from 'int'
-C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\Victim.c(92,56): warning C4133: 'function': incompatible types - from 'int *' to 'const char *'
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\AnyDeskFile.h(302,27): warning C4013: 'startsWith' undefined; assuming extern returning int
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\AnyDeskFile.h(347,20): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'FILE *'
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\Victim.c(83,57): warning C4133: 'function': incompatible types - from 'int *' to 'const char *'
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\Victim.c(97,59): warning C4133: 'function': incompatible types - from 'int *' to 'const char *'
+C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Victim\Victim.c(112,56): warning C4133: 'function': incompatible types - from 'int *' to 'const char *'
   Generating code
-  1 of 44 functions ( 2.3%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  Previous IPDB not found, fall back to full compilation.
+  All 52 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   Victim.vcxproj -> C:\Users\Matan\Documents\CProjects\AnyDeskVirus\Victim\Release\Victim.exe

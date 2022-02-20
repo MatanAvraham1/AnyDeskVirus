@@ -151,8 +151,15 @@
     <ClInclude Include="AnyDeskFile.h" />
     <ClInclude Include="CurlRequest.h" />
     <ClInclude Include="dirent.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="StartupRegister.h" />
     <ClInclude Include="Helper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Victim.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\DiscordIcon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
